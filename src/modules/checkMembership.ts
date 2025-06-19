@@ -25,6 +25,13 @@ import {
         redirectUrl: string;
         membershipValid: boolean;
     }
+
+    const showError = (message) => {
+        const formError = new WFComponent<HTMLDivElement>(".form_error-wrapper");
+        const formErrorText = new WFComponent<HTMLDivElement>(".form_error-message");
+        formError.setStyle({ display: "inline-flex" });
+        formErrorText.setText(message);
+    };
   
     onReady(() => {
         try {
@@ -48,11 +55,6 @@ import {
                 ucn: string;
                 url: string;
             }>(".cardnumberform");
-  
-            const showError = (message) => {
-                formError.setStyle({ display: "inline-flex" });
-                formErrorText.setText(message);
-            };
   
             const hideError = () => {
                 formError.setStyle({ display: "none" });
@@ -144,110 +146,72 @@ import {
             }
 
             loginForm.onFormSubmit((data) => {
-                const savedUcn = getCookie('ucn');
+                const payload: MembershipCheckPayload = {
+                    ucn: data.ucn, // Get ucn from the form data
+                    url: getRedirectUrl(),
+                    redirectUrl: '',
+                    membershipValid: false,
+                };
 
-                if (savedUcn) {
-                    const payload: MembershipCheckPayload = {
-                        ucn: savedUcn,
-                        url: getRedirectUrl(),
-                        redirectUrl: '',
-                        membershipValid,
-                    };
+                console.log('payload', payload);
 
-                    console.log('payload', payload);
-            
-                    const postUser = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck", {
-                        data: payload,
-                    });
-                    
-                    postUser.fetch(payload);
+                const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck", {
+                    data: payload,
+                });
 
-                    postUser.onData((data) => {
+                membershipCheck.onLoadingChange((status) => {
+                    if (status === true) {
+                        membershipCheckBtn.setAttribute("value", "Checking card number...");
+                    } else {
+                        membershipCheckBtn.setAttribute("value", "Submit");
+                    }
+                });
+
+                membershipCheck.onData((data) => {
+                    if (data.membershipValid === true) {
                         console.log('data', data);
-                        if (data.membershipValid === true) {
-                            setCookie('membershipValid', 'true', 1/24);
-                            setCookie('ucn', data.ucn, 1/24);
-                            
-                            // If we have a redirectUrl from the response, use it
-                            if (data.redirectUrl) {
-                                window.location.href = data.redirectUrl;
-                            } else {
-                                // Otherwise use the original card URL
-                                window.location.href = clickedCardUrl;
-                            }
+
+                        setCookie('membershipValid', 'true', 1/24);
+                        setCookie('ucn', data.ucn, 1/24);
+
+                        // Use the redirectUrl from the response if available
+                        if (data.redirectUrl) {
+                            window.location.href = data.redirectUrl;
+                        } else if (storefrontBanner) {
+                            // If we're in the storefront flow, redirect to storefront
+                            window.location.href = process.env.TILLO_STOREFRONT_URL;
                         } else {
-                            setCookie('membershipValid', 'false', 1/24);
-                            showError(`Something went wrong, please check your card number and try again.`);
+                            // Otherwise use the clicked card URL
+                            window.location.href = clickedCardUrl;
                         }
-                    });
-                } else {
-                    const payload: MembershipCheckPayload = {
-                        ucn: data.ucn,
-                        url: getRedirectUrl(),
-                        redirectUrl: '',
-                        membershipValid: false,
-                    };
+                        
+                        membershipModal.setStyle({ display: "none" });
+                        membershipModal.removeCssClass('show-modal');
 
-                    console.log('payload', payload);
-    
-                    const postUser = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck", {
-                        data: payload,
-                    });
-    
-                    postUser.onLoadingChange((status) => {
-                        if (status === true) {
-                            membershipCheckBtn.setAttribute("value", "Checking card number...");
-                        } else {
-                            membershipCheckBtn.setAttribute("value", "Submit");
-                        }
-                    });
-    
-                    postUser.onData((data) => {
-                        if (data.membershipValid === true) {
-                            console.log('data', data);
-
-                            setCookie('membershipValid', 'true', 1/24);
-                            setCookie('ucn', data.ucn, 1/24);
-
-                            // Use the redirectUrl from the response if available
-                            if (data.redirectUrl) {
-                                window.location.href = data.redirectUrl;
-                            } else if (storefrontBanner) {
-                                // If we're in the storefront flow, redirect to storefront
-                                window.location.href = process.env.TILLO_STOREFRONT_URL;
-                            } else {
-                                // Otherwise use the clicked card URL
-                                window.location.href = clickedCardUrl;
-                            }
-                            
-                            membershipModal.setStyle({ display: "none" });
-                            membershipModal.removeCssClass('show-modal');
-
-                        } else {
-                            setCookie('membershipValid', 'false', 1/24);
-                            showError(`Something went wrong, please check your card number and try again.`);
-                        }
-                    });
-    
-                    postUser.onError((error) => {
+                    } else {
                         setCookie('membershipValid', 'false', 1/24);
-                        if (error.status === 404) {
-                            showError('Card number not found.');
-                        } else if (error.status === 400) {
-                            showError('Your unique card number is required');
-                        } else if (error.message === 'Timeout') {
-                            showError('Request timed out. Please try again.');
-                        } else {
-                            showError('Something went wrong, please try again.');
-                        }
-                    });
-    
-                    postUser.fetch(payload);
-                }
+                        showError(`Something went wrong, please check your card number and try again.`);
+                    }
+                });
+
+                membershipCheck.onError((error) => {
+                    setCookie('membershipValid', 'false', 1/24);
+                    if (error.status === 404) {
+                        showError('Card number not found.');
+                    } else if (error.status === 400) {
+                        showError('Your unique card number is required');
+                    } else if (error.message === 'Timeout') {
+                        showError('Request timed out. Please try again.');
+                    } else {
+                        showError('Something went wrong, please try again.');
+                    }
+                });
+
+                membershipCheck.fetch(payload);
             });
         } catch (error) {
             console.error('Error initializing membership check:', error);
-            // Continue execution even if there's an error
+            showError('Something went wrong, please try again.');
         }
     });
   };

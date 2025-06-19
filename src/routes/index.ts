@@ -38,6 +38,14 @@ export const globalFnRoutes = () => {
   new WFRoute("/(.*)").execute(() => {
     // Global funcs here
     //console.log("I am a global func");
+    // If the user clicks logout, set the membershipValid cookie to false
+    const logoutButton = document.querySelector('.dropdown-link.is-logout');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', () => {
+        setCookie('membershipValid', 'false', 1/24);
+        location.reload();
+      });
+    }
     });
 };
 
