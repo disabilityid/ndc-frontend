@@ -176,13 +176,16 @@ import {
 
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
-                            window.location.href = data.redirectUrl;
+                            window.open(data.redirectUrl, '_blank');
+                            console.log('A');
                         } else if (storefrontBanner) {
                             // If we're in the storefront flow, redirect to storefront
-                            window.location.href = process.env.TILLO_STOREFRONT_URL;
+                            window.open(process.env.TILLO_STOREFRONT_URL, '_blank');
+                            console.log('B');
                         } else {
                             // Otherwise use the clicked card URL
                             window.location.href = clickedCardUrl;
+                            console.log('C');
                         }
                         
                         membershipModal.setStyle({ display: "none" });
