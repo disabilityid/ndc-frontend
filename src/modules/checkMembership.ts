@@ -81,11 +81,14 @@ import {
                         membershipModal.addCssClass('show-modal');
                     }
                 } else if (membershipValid) {
-                    // For regular cards, just navigate to the URL
-                    window.location.href = clickedCardUrl;
-                    // For storefront banner, redirect to storefront
-                    console.log('redirecting to storefront');
-                    window.location.href = getCookie('authUrl');
+                    if (event?.target && !(event.target as Element).closest('[xa-elem="storefront"]')) { // if click is on a regular card
+                        // For regular cards, just navigate to the URL
+                        window.location.href = clickedCardUrl;
+                    } else if (event?.target && (event.target as Element).closest('[xa-elem="storefront"]')) { // if click is on the storefront banner
+                        // For storefront banner, redirect to storefront
+                        console.log('redirecting to storefront');
+                        window.location.href = getCookie('authUrl');
+                    }
                 } else {
                     if (membershipModal) {
                         membershipModal.setStyle({ display: "block" });
