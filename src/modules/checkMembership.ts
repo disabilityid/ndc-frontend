@@ -24,6 +24,7 @@ import {
         url: string;
         redirectUrl: string;
         membershipValid: boolean;
+        authUrl: string;
     }
 
     const showError = (message) => {
@@ -83,9 +84,8 @@ import {
                     // For regular cards, just navigate to the URL
                     window.location.href = clickedCardUrl;
                     // For storefront banner, redirect to storefront
-                    if (event?.target && (event.target as Element).closest('[xa-elem="storefront"]')) {
-                        window.location.href = process.env.TILLO_STOREFRONT_URL;
-                    }
+                    console.log('redirecting to storefront');
+                    window.location.href = getCookie('authUrl');
                 } else {
                     if (membershipModal) {
                         membershipModal.setStyle({ display: "block" });
@@ -146,11 +146,13 @@ import {
             }
 
             loginForm.onFormSubmit((data) => {
+                const ucn = getCookie('ucn') || data.ucn;
                 const payload: MembershipCheckPayload = {
-                    ucn: data.ucn, // Get ucn from the form data
+                    ucn: ucn,
                     url: getRedirectUrl(),
                     redirectUrl: '',
                     membershipValid: false,
+                    authUrl: getCookie('authUrl') || '',
                 };
 
                 console.log('payload', payload);
@@ -173,6 +175,7 @@ import {
 
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
+                        setCookie('authUrl', data.authUrl, 1/24);
 
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {

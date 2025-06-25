@@ -43,6 +43,8 @@ export const globalFnRoutes = () => {
     if (logoutButton) {
       logoutButton.addEventListener('click', () => {
         setCookie('membershipValid', 'false', 1/24);
+        // delete the ucn cookie
+        document.cookie = "ucn=; path=/";
         location.reload();
       });
     }
