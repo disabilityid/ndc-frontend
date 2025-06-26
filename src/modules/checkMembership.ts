@@ -176,14 +176,13 @@ import {
                         setCookie('ucn', data.ucn, 1/24);
                         setCookie('authUrl', data.authUrl, 1/24);
 
+                        // reload the page
+                        window.location.reload();
+
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
-                                window.location.reload();
-                                // wrap the open in a setTimeout to ensure the page is reloaded
-                                setTimeout(() => {
-                                    window.open(data.redirectUrl, '_blank');
-                                }, 1000);
+                                window.open(data.redirectUrl, '_blank');
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
