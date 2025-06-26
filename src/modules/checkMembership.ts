@@ -176,9 +176,6 @@ import {
                         setCookie('ucn', data.ucn, 1/24);
                         setCookie('authUrl', data.authUrl, 1/24);
 
-                        // reload the page
-                        window.location.reload();
-
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
