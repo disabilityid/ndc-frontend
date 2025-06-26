@@ -190,8 +190,8 @@ import {
 
                                 // Then open 3rd-party login tab after short delay
                                 setTimeout(() => {
-                                window.open(data.redirectUrl, '_blank');
-                                }, 100); // Give the reload some time to start
+                                    window.open(data.redirectUrl, '_blank');
+                                }, 1000); // Give the reload some time to start
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
