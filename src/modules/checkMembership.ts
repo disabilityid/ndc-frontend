@@ -179,6 +179,7 @@ import {
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
+                                window.location.reload();
                                 window.open(data.redirectUrl, '_blank');
                             } else {
                                 window.location.href = data.redirectUrl;
