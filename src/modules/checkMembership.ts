@@ -183,7 +183,7 @@ import {
                                 // wrap the open in a setTimeout to ensure the page is reloaded
                                 setTimeout(() => {
                                     window.open(data.redirectUrl, '_blank');
-                                }, 500);
+                                }, 1000);
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
