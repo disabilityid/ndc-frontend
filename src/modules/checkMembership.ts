@@ -86,8 +86,7 @@ import {
                         window.location.href = clickedCardUrl;
                     } else if (event?.target && (event.target as Element).closest('[xa-elem="storefront"]')) { // if click is on the storefront banner
                         // For storefront banner, redirect to storefront
-                        console.log('redirecting to storefront');
-                        window.location.href = getCookie('authUrl');
+                        window.open(getCookie('authUrl'), '_blank');
                     }
                 } else {
                     if (membershipModal) {
@@ -158,8 +157,6 @@ import {
                     authUrl: getCookie('authUrl') || '',
                 };
 
-                console.log('payload', payload);
-
                 const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck", {
                     data: payload,
                 });
@@ -174,7 +171,6 @@ import {
 
                 membershipCheck.onData((data) => {
                     if (data.membershipValid === true) {
-                        console.log('data', data);
 
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
