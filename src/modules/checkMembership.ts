@@ -188,9 +188,10 @@ import {
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
-                                window.open(data.redirectUrl, '_blank');
                                 // Notify current tab that the membership is valid
                                 loginChannel.postMessage('membership-valid');
+                                
+                                window.open(data.redirectUrl, '_blank');
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
