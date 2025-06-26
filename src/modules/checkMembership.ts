@@ -146,6 +146,15 @@ import {
                     await handleMembershipCheck(e);
                 });
             }
+            const loginChannel = new BroadcastChannel('membership_login');
+
+            loginChannel.onmessage = (event) => {
+            if (event.data === 'membership-valid') {
+                console.log('Membership login successful!');
+                // Refresh cookie-sensitive logic/UI
+                location.reload(); // or dynamically show protected content
+            }
+            };
 
             loginForm.onFormSubmit((data) => {
                 const ucn = getCookie('ucn') || data.ucn;
@@ -180,6 +189,8 @@ import {
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
                                 window.open(data.redirectUrl, '_blank');
+                                // Notify current tab that the membership is valid
+                                loginChannel.postMessage('membership-valid');
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
