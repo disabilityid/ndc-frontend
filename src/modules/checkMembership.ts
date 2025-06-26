@@ -180,7 +180,10 @@ import {
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
                                 window.location.reload();
-                                window.open(data.redirectUrl, '_blank');
+                                // wrap the open in a setTimeout to ensure the page is reloaded
+                                setTimeout(() => {
+                                    window.open(data.redirectUrl, '_blank');
+                                }, 500);
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
