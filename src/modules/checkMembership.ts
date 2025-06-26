@@ -146,15 +146,6 @@ import {
                     await handleMembershipCheck(e);
                 });
             }
-            const loginChannel = new BroadcastChannel('membership_login');
-
-            loginChannel.onmessage = (event) => {
-            if (event.data === 'membership-valid') {
-                console.log('Membership login successful!');
-                // Refresh cookie-sensitive logic/UI
-                location.reload(); // or dynamically show protected content
-            }
-            };
 
             loginForm.onFormSubmit((data) => {
                 const ucn = getCookie('ucn') || data.ucn;
@@ -188,10 +179,19 @@ import {
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             if (data.redirectUrl.includes('auth')) {
-                                // Notify current tab that the membership is valid
-                                loginChannel.postMessage('membership-valid');
-                                
+                                // Set cookies
+                                setCookie('membershipValid', 'true', 1/24);
+                                setCookie('ucn', data.ucn, 1/24);
+                                setCookie('authUrl', data.authUrl, 1/24);
+
+                                // Immediately update UI in the current tab
+                                console.log('Membership valid, refreshing current tab state');
+                                location.reload(); // or trigger UI update manually if preferred
+
+                                // Then open 3rd-party login tab after short delay
+                                setTimeout(() => {
                                 window.open(data.redirectUrl, '_blank');
+                                }, 100); // Give the reload some time to start
                             } else {
                                 window.location.href = data.redirectUrl;
                             }
