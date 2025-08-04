@@ -86,7 +86,8 @@ import {
                         window.location.href = clickedCardUrl;
                     } else if (event?.target && (event.target as Element).closest('[xa-elem="storefront"]')) { // if click is on the storefront banner
                         // For storefront banner, redirect to storefront
-                        window.open(getCookie('authUrl'), '_blank');
+                        const authUrl = decodeURIComponent(getCookie('authUrl'));
+                        window.open(authUrl, '_blank');
                     }
                 } else {
                     if (membershipModal) {
@@ -174,7 +175,7 @@ import {
 
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
-                        setCookie('authUrl', data.authUrl, 1/24);
+                        setCookie('authUrl', encodeURIComponent(data.authUrl), 1/24);
 
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
