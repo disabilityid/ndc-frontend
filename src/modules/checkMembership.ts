@@ -158,7 +158,7 @@ import {
                     authUrl: getCookie('authUrl') || '',
                 };
 
-                const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck", {
+                const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck?mode=json", {
                     data: payload,
                 });
 

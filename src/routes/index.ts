@@ -98,7 +98,15 @@ export const discountListRoutes = () => {
 
 export const discountPageRoutes = () => {
   new WFRoute("/discount/(.*)").execute(() => {
-    
+    // create a new xAtom element from any element with the data-attribute 'xa-elem="storefront-deeplink"'
+    const storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
+    if (storefrontDeepLink) {
+      storefrontDeepLink.on('click', () => {
+        console.log('YUP we\'re navigating to the storefront-deep-link');
+        const authUrl = decodeURIComponent(getCookie('authUrl'));
+        window.open(authUrl, '_blank');
+      });
+    }
     membershipCheck();
 
     // Check for the 'membershipValid' cookie
