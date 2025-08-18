@@ -98,30 +98,23 @@ export const discountListRoutes = () => {
 
 export const discountPageRoutes = () => {
   new WFRoute("/discount/(.*)").execute(() => {
-    // Try to get storefront element, but don't fail if it doesn't exist
-    let storefrontBanner: WFComponent<HTMLDivElement> | null = null;
-
-    // create a new xAtom element from any element with the data-attribute 'xa-elem="storefront-deeplink"'
-    let storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
-
+    let storefrontDeepLink: WFComponent<HTMLAnchorElement> | null = null;
     try {
-      storefrontBanner = new WFComponent<HTMLDivElement>('[xa-elem="storefront"]');
+      // create a new xAtom element from any element with the data-attribute 'xa-elem="storefront-deeplink"'
       storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
     } catch (e) {
-        console.log('Storefront element not found, continuing without it');
-        console.log('Storefront deep link element not found, continuing without it');
+      console.log('Storefront deeplink not found, continuing without it');
     }
 
     if (storefrontDeepLink) {
       storefrontDeepLink.on('click', () => {
-        console.log('YUP we\'re navigating to the storefront-deep-link');
         const authUrl = decodeURIComponent(getCookie('authUrl'));
         window.open(authUrl, '_blank');
       });
     }
     
-    fetchSingleUseCode();
     membershipCheck();
+    fetchSingleUseCode();
 
     // Check for the 'membershipValid' cookie
     const membershipValid = getCookie('membershipValid') === 'true';
