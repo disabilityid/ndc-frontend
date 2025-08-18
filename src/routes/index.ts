@@ -98,8 +98,20 @@ export const discountListRoutes = () => {
 
 export const discountPageRoutes = () => {
   new WFRoute("/discount/(.*)").execute(() => {
+    // Try to get storefront element, but don't fail if it doesn't exist
+    let storefrontBanner: WFComponent<HTMLDivElement> | null = null;
+
     // create a new xAtom element from any element with the data-attribute 'xa-elem="storefront-deeplink"'
-    const storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
+    let storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
+
+    try {
+      storefrontBanner = new WFComponent<HTMLDivElement>('[xa-elem="storefront"]');
+      storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
+    } catch (e) {
+        console.log('Storefront element not found, continuing without it');
+        console.log('Storefront deep link element not found, continuing without it');
+    }
+
     if (storefrontDeepLink) {
       storefrontDeepLink.on('click', () => {
         console.log('YUP we\'re navigating to the storefront-deep-link');
@@ -107,14 +119,7 @@ export const discountPageRoutes = () => {
         window.open(authUrl, '_blank');
       });
     }
-    // Try to get storefront element, but don't fail if it doesn't exist
-    let storefrontBanner: WFComponent<HTMLDivElement> | null = null;
-
-    try {
-        storefrontBanner = new WFComponent<HTMLDivElement>('[xa-elem="storefront"]');
-    } catch (e) {
-        console.log('Storefront element not found, continuing without it');
-    }
+    
     fetchSingleUseCode();
     membershipCheck();
 
