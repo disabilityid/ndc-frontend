@@ -107,6 +107,7 @@ export const discountPageRoutes = () => {
         window.open(authUrl, '_blank');
       });
     }
+    fetchSingleUseCode();
     membershipCheck();
 
     // Check for the 'membershipValid' cookie
