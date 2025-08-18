@@ -107,6 +107,14 @@ export const discountPageRoutes = () => {
         window.open(authUrl, '_blank');
       });
     }
+    // Try to get storefront element, but don't fail if it doesn't exist
+    let storefrontBanner: WFComponent<HTMLDivElement> | null = null;
+
+    try {
+        storefrontBanner = new WFComponent<HTMLDivElement>('[xa-elem="storefront"]');
+    } catch (e) {
+        console.log('Storefront element not found, continuing without it');
+    }
     fetchSingleUseCode();
     membershipCheck();
 
