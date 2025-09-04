@@ -98,20 +98,21 @@ export const discountListRoutes = () => {
 
 export const discountPageRoutes = () => {
   new WFRoute("/discount/(.*)").execute(() => {
-    let storefrontDeepLink: WFComponent<HTMLAnchorElement> | null = null;
-    try {
-      // create a new xAtom element from any element with the data-attribute 'xa-elem="storefront-deeplink"'
-      storefrontDeepLink = new WFComponent<HTMLAnchorElement>('[xa-elem="storefront-deeplink"]');
-    } catch (e) {
-      console.log('Storefront deeplink not found, continuing without it');
-    }
-
-    if (storefrontDeepLink) {
-      storefrontDeepLink.on('click', () => {
-        const authUrl = decodeURIComponent(getCookie('authUrl'));
-        window.open(authUrl, '_blank');
-      });
-    }
+    // Get all elements with the data-attribute 'xa-elem="storefront-deeplink"'
+    const storefrontDeepLinkElements = document.querySelectorAll('[xa-elem="storefront-deeplink"]');
+    
+    // Create a WFComponent for each deeplink element and attach click handlers
+    storefrontDeepLinkElements.forEach((element) => {
+      try {
+        const storefrontDeepLink = new WFComponent<HTMLAnchorElement>(element);
+        storefrontDeepLink.on('click', () => {
+          const authUrl = decodeURIComponent(getCookie('authUrl'));
+          window.open(authUrl, '_blank');
+        });
+      } catch (e) {
+        console.log('Error creating WFComponent for storefront deeplink:', e);
+      }
+    });
     
     membershipCheck();
     fetchSingleUseCode();
