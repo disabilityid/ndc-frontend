@@ -17,14 +17,12 @@ import {
     );
     const axiosClient = new AxiosClient(axiosConfigurator);
 
-    const urlParams = new URLSearchParams(window.location.search);
-
     interface MembershipCheckPayload {
         ucn: string;
         url: string;
         redirectUrl: string;
         membershipValid: boolean;
-        authUrl: string;
+        isBannerClick: boolean;
     }
 
     const showError = (message) => {
@@ -81,14 +79,7 @@ import {
                         membershipModal.addCssClass('show-modal');
                     }
                 } else if (membershipValid) {
-                    if (event?.target && !(event.target as Element).closest('[xa-elem="storefront"]')) { // if click is on a regular card
-                        // For regular cards, just navigate to the URL
-                        window.location.href = clickedCardUrl;
-                    } else if (event?.target && (event.target as Element).closest('[xa-elem="storefront"]')) { // if click is on the storefront banner
-                        // For storefront banner, redirect to storefront
-                        const authUrl = decodeURIComponent(getCookie('authUrl'));
-                        window.open(authUrl, '_blank');
-                    }
+                    window.location.href = clickedCardUrl;
                 } else {
                     if (membershipModal) {
                         membershipModal.setStyle({ display: "block" });
@@ -116,6 +107,7 @@ import {
             }
   
             let clickedCardUrl = "";
+            let isBannerClick = false;
 
             const parentContainer = new WFComponent<HTMLDivElement>(".discount_list");
 
@@ -126,6 +118,9 @@ import {
 
                     e.preventDefault();  // Stop default navigation
                     
+                    isBannerClick = false;
+                    console.log('isBannerClick:', isBannerClick);
+
                     // Get the URL directly from the card's href since it is an anchor tag
                     clickedCardUrl = (card as HTMLAnchorElement).href;
                     console.log('Card URL:', clickedCardUrl);
@@ -142,6 +137,8 @@ import {
             if (storefrontBanner) {
                 storefrontBanner.on('click', async (e) => {
                     e.preventDefault();
+                    isBannerClick = true;
+                    console.log('isBannerClick:', isBannerClick);
                     clickedCardUrl = process.env.TILLO_STOREFRONT_URL;
                     console.log('Storefront URL:', clickedCardUrl);
                     await handleMembershipCheck(e);
@@ -155,7 +152,7 @@ import {
                     url: getRedirectUrl(),
                     redirectUrl: '',
                     membershipValid: false,
-                    authUrl: getCookie('authUrl') || '',
+                    isBannerClick: isBannerClick,
                 };
 
                 const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck?mode=json", {
@@ -175,19 +172,11 @@ import {
 
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
-                        setCookie('authUrl', encodeURIComponent(data.authUrl), 1/24);
 
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
-                            if (data.redirectUrl.includes('auth')) {
-                                // Immediately update UI in the current tab
-                                console.log('Membership valid, refreshing current tab state');
-                                location.reload(); // or trigger UI update manually if preferred
-
-                                window.open(data.redirectUrl, '_blank');
-                            } else {
-                                window.location.href = data.redirectUrl;
-                            }
+                            console.log('Redirecting to URL:', data.redirectUrl);
+                            window.location.href = data.redirectUrl;
                         } else {
                             // Otherwise use the clicked card URL
                             window.location.href = clickedCardUrl;
