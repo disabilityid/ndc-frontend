@@ -23,7 +23,6 @@ import {
         redirectUrl: string;
         membershipValid: boolean;
         isBannerClick: boolean;
-        sessionId: string;
     }
 
     const showError = (message) => {
@@ -153,8 +152,7 @@ import {
                     url: getRedirectUrl(),
                     redirectUrl: '',
                     membershipValid: false,
-                    isBannerClick: isBannerClick,
-                    sessionId: '',
+                    isBannerClick: isBannerClick
                 };
 
                 const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck?mode=json", {
@@ -174,20 +172,11 @@ import {
 
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
-                        document.cookie = `sessionId=${data.sessionId}; path=/; max-age=900; secure; samesite=strict`;
-
+                        
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
-                            if (isBannerClick) {
-                                // Now redirect user to Storefront with sessionId appended
-                                const storeFrontUrl = new URL(data.redirectUrl);
-                                storeFrontUrl.searchParams.append('sessionId', data.sessionId);
-                                window.location.href = storeFrontUrl.toString();
-                            } else {
-                                console.log('Redirecting to URL:', data.redirectUrl);
-                                window.location.href = clickedCardUrl;
-                            }
-                            //window.location.href = data.redirectUrl;
+                            console.log('Redirecting to URL:', data.redirectUrl);
+                            window.location.href = data.redirectUrl;
                         } else {
                             // Otherwise use the clicked card URL
                             window.location.href = clickedCardUrl;
