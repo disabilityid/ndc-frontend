@@ -67,8 +67,6 @@ import {
                 formError.setStyle({ display: "none" });
                 formErrorText.setText('');
             };
-            
-            const membershipValid = getCookie('membershipValid') === 'true';
 
             const getRedirectUrl = (event?: Event) => {
                 // If we're in the storefront flow, use the storefront URL
@@ -80,6 +78,9 @@ import {
             };
 
             const handleMembershipCheck = async (event?: Event) => {
+                // Check cookie value dynamically to handle browser back navigation
+                const membershipValid = getCookie('membershipValid') === 'true';
+                
                 if (!membershipValid) {
                     // Always show membership modal for invalid membership
                     if (membershipModal) {
