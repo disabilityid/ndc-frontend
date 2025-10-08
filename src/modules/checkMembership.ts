@@ -177,7 +177,12 @@ import {
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             console.log('Redirecting to URL:', data.redirectUrl);
-                            window.location.href = data.redirectUrl;
+                            // If redirecting to the same page, reload instead
+                            if (data.redirectUrl === window.location.href) {
+                                window.location.reload();
+                            } else {
+                                window.location.href = data.redirectUrl;
+                            }
                         } else {
                             // Otherwise use the clicked card URL
                             window.location.href = clickedCardUrl;
