@@ -188,11 +188,11 @@ import {
 
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
+                        window.location.reload();
                         
                         // Use the redirectUrl from the response if available
                         if (data.redirectUrl) {
                             // first reload the page
-                            window.location.reload();
                             console.log('Redirecting to URL:', data.redirectUrl);
                             // If redirecting to the same page, reload instead
                             if (data.redirectUrl === window.location.href) {
