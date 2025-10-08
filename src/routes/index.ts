@@ -56,38 +56,51 @@ export const loginRoutes = () => {
     membershipCheck(window.location.href);
 
     // If the user is now logged in hide the login form inside the .login-wrapper and change the p to read "You are logged in" then add a link to the /discounts-and-benefits page
-    const loginWrapper = new WFComponent<HTMLDivElement>(".login-wrapper");
-    if (loginWrapper) {
-      loginWrapper.setStyle({ display: "none" });
-      const loginWrapperEl = loginWrapper.getElement();
-      loginWrapperEl.offsetHeight; // Force reflow
-    }
-    const loginParagraph = new WFComponent<HTMLParagraphElement>("p");
-    if (loginParagraph) {
-      loginParagraph.setText("You are logged in");
-      const loginParagraphEl = loginParagraph.getElement();
-      loginParagraphEl.offsetHeight; // Force reflow
-    }
-    const loginLink = new WFComponent<HTMLAnchorElement>("a");
-    if (loginLink) {
-      loginLink.setText("Go to discounts and benefits");
-      const loginLinkEl = loginLink.getElement();
-      loginLinkEl.offsetHeight; // Force reflow
-    }
-    loginLink.on('click', () => {
-      window.location.href = "/discounts-and-benefits";
-    });
-
-    // If the user clicks logout, set the membershipValid cookie to false
-    const logoutButton = document.querySelector('.dropdown-link.is-logout');
-
-    if (logoutButton) {
-      logoutButton.addEventListener('click', () => {
-        location.reload();
-      });
+    const membershipValid = getCookie('membershipValid') === 'true';
+    if (membershipValid) {
+      const cardnumberform = new WFComponent<HTMLDivElement>(".cardnumberform");
+      if (cardnumberform) {
+        cardnumberform.setStyle({ display: "none" });
+        const cardnumberformEl = cardnumberform.getElement();
+        cardnumberformEl.offsetHeight; // Force reflow
+      }
+      // check if the login paragraph exists and is in the login wrapper
+      const loginWrapper = new WFComponent<HTMLDivElement>(".login-wrapper");
+      if (loginWrapper) {
+        const loginParagraph = new WFComponent<HTMLParagraphElement>("p");
+        if (loginParagraph) {
+          loginParagraph.setText("You are logged in");
+          const loginParagraphEl = loginParagraph.getElement();
+          loginParagraphEl.offsetHeight; // Force reflow
+        }
+      }
+      // add this link inside the login wrapper after the login paragraph
+      if (loginWrapper) {
+        const loginLink = new WFComponent<HTMLAnchorElement>("a");
+        if (loginLink) {
+          loginLink.setText("Go to discounts and benefits");
+          const loginLinkEl = loginLink.getElement();
+          loginLinkEl.offsetHeight; // Force reflow
+          loginLink.setStyle({ textDecoration: "underline" });
+          loginLink.setStyle({ color: "green" });
+          loginLink.on('click', () => {
+            window.location.href = "/discounts-and-benefits";
+          });
+        }
+      }
     }
   })
+
+  // If the user clicks logout, set the membershipValid cookie to false
+  const logoutButton = document.querySelector('.dropdown-link.is-logout');
+
+  if (logoutButton) {
+    logoutButton.addEventListener('click', () => {
+      location.reload();
+    });
+  }
 }
+
 
 export const discountListRoutes = () => {
   new WFRoute("/discounts-and-benefits").execute(() => {
