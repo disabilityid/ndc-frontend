@@ -64,29 +64,15 @@ export const loginRoutes = () => {
         const cardnumberformEl = cardnumberform.getElement();
         cardnumberformEl.offsetHeight; // Force reflow
       }
-      // check if the login paragraph exists and is in the login wrapper
-      const loginWrapper = new WFComponent<HTMLDivElement>(".login-wrapper");
-      if (loginWrapper) {
-        const loginParagraph = new WFComponent<HTMLParagraphElement>("p");
-        if (loginParagraph) {
-          loginParagraph.setText("You are logged in");
-          const loginParagraphEl = loginParagraph.getElement();
-          loginParagraphEl.offsetHeight; // Force reflow
-        }
+      // change the text of the element with the class login-text to "You are logged in"
+      const loginText = new WFComponent<HTMLParagraphElement>(".login-text");
+      if (loginText) {
+        loginText.setText("You are logged in");
       }
-      // add this link inside the login wrapper after the login paragraph
-      if (loginWrapper) {
-        const loginLink = new WFComponent<HTMLAnchorElement>("a");
-        if (loginLink) {
-          loginLink.setText("Go to discounts and benefits");
-          const loginLinkEl = loginLink.getElement();
-          loginLinkEl.offsetHeight; // Force reflow
-          loginLink.setStyle({ textDecoration: "underline" });
-          loginLink.setStyle({ color: "green" });
-          loginLink.on('click', () => {
-            window.location.href = "/discounts-and-benefits";
-          });
-        }
+      // remove the class "hide" from the element with the class "logged-in-link"
+      const loggedInLink = new WFComponent<HTMLAnchorElement>(".logged-in-link");
+      if (loggedInLink) {
+        loggedInLink.removeCssClass("hide");
       }
     }
   })
