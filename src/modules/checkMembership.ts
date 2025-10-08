@@ -117,7 +117,14 @@ import {
             let clickedCardUrl = "";
             let isBannerClick = false;
 
-            const parentContainer = new WFComponent<HTMLDivElement>(".discount_list");
+            // Try to get discount list element, but don't fail if it doesn't exist (e.g., on /login page)
+            let parentContainer: WFComponent<HTMLDivElement> | null = null;
+
+            try {
+                parentContainer = new WFComponent<HTMLDivElement>(".discount_list");
+            } catch (e) {
+                console.log('Discount list not found, continuing without it');
+            }
 
             if (parentContainer) {
                 parentContainer.on("click", async (e) => {
