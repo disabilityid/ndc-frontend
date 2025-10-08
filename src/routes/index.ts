@@ -53,13 +53,13 @@ export const globalFnRoutes = () => {
 
 export const loginRoutes = () => {
   new WFRoute("/login").execute(() => {
-    membershipCheck();
+    membershipCheck(window.location.href);
   })
 }
 
 export const discountListRoutes = () => {
   new WFRoute("/discounts-and-benefits").execute(() => {
-    membershipCheck();
+    membershipCheck(window.location.href);
 
     const selects = new WFComponent<HTMLSelectElement>("select");
     const option = selects.getChildAsComponents("option");
@@ -113,8 +113,8 @@ export const discountPageRoutes = () => {
         console.log('Error creating WFComponent for storefront deeplink:', e);
       }
     });
-    
-    membershipCheck();
+    // pass the current page url to the membershipCheck function to be used as the url
+    membershipCheck(window.location.href);
     fetchSingleUseCode();
 
     // Check for the 'membershipValid' cookie

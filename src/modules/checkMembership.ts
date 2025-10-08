@@ -7,7 +7,7 @@ import {
   import { WFFormComponent } from "@xatom/core";
   import { getCookie, setCookie } from "../routes";
   
-  export const membershipCheck = () => {
+  export const membershipCheck = (url: string) => {
     let endpoint = window.location.href.startsWith('http://localhost:3020') 
     ? process.env.LOCAL 
     : process.env.API_BASE_URL;
@@ -154,8 +154,9 @@ import {
                     membershipValid: false,
                     isBannerClick: isBannerClick
                 };
-
-                const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck?mode=json", {
+                
+                // set up membership check to accept the url parameter as an arg from the discount page
+                const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck?mode=json&url=" + url, {
                     data: payload,
                 });
 
