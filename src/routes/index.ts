@@ -58,11 +58,11 @@ export const loginRoutes = () => {
     // If the user is now logged in hide the login form inside the .login-wrapper and change the p to read "You are logged in" then add a link to the /discounts-and-benefits page
     const membershipValid = getCookie('membershipValid') === 'true';
     if (membershipValid) {
-      const cardnumberform = new WFComponent<HTMLDivElement>(".cardnumberform");
-      if (cardnumberform) {
-        cardnumberform.setStyle({ display: "none" });
-        const cardnumberformEl = cardnumberform.getElement();
-        cardnumberformEl.offsetHeight; // Force reflow
+      const loginFormWrapper = new WFComponent<HTMLDivElement>(".login-form-hook");
+      if (loginFormWrapper) {
+        loginFormWrapper.setStyle({ display: "none" });
+        const loginFormWrapperEl = loginFormWrapper.getElement();
+        loginFormWrapperEl.offsetHeight; // Force reflow
       }
       // change the text of the element with the class login-text to "You are logged in"
       const loginText = new WFComponent<HTMLParagraphElement>(".login-text");
