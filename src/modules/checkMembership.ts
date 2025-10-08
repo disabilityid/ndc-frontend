@@ -35,12 +35,20 @@ import {
     onReady(() => {
         try {
             const membershipCheckBtn = new WFComponent<HTMLDivElement>(".membership-check-button");
-            const membershipModal = new WFComponent<HTMLDivElement>(".membership-modal");
             const modalCloseButtonEl = document.querySelector(".modal1_close-button");
             const modalBackgroundEl = document.querySelector(".modal1_background-overlay");
             const formError = new WFComponent<HTMLDivElement>(".form_error-wrapper");
             const formErrorText = new WFComponent<HTMLDivElement>(".form_error-message");
             
+            // Try to get modal element, but don't fail if it doesn't exist (e.g., on /login page)
+            let membershipModal: WFComponent<HTMLDivElement> | null = null;
+
+            try {
+                membershipModal = new WFComponent<HTMLDivElement>(".membership-modal");
+            } catch (e) {
+                console.log('Membership modal not found, continuing without it');
+            }
+
             // Try to get storefront element, but don't fail if it doesn't exist
             let storefrontBanner: WFComponent<HTMLDivElement> | null = null;
 
