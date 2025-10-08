@@ -67,8 +67,8 @@ import {
                 if (event?.target && (event.target as Element).closest('[xa-elem="storefront"]')) {
                     return process.env.TILLO_STOREFRONT_URL;
                 }
-                // Otherwise use the clicked card URL
-                return clickedCardUrl;
+                // Otherwise use the clicked card URL, or fallback to current page URL
+                return clickedCardUrl || url;
             };
 
             const handleMembershipCheck = async (event?: Event) => {
