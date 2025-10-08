@@ -188,8 +188,10 @@ import {
                             window.location.href = clickedCardUrl;
                         }
                         
-                        membershipModal.setStyle({ display: "none" });
-                        membershipModal.removeCssClass('show-modal');
+                        if (membershipModal) {
+                            membershipModal.setStyle({ display: "none" });
+                            membershipModal.removeCssClass('show-modal');
+                        }
 
                     } else {
                         setCookie('membershipValid', 'false', 1/24);
