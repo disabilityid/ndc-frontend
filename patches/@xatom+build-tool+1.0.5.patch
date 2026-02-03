@@ -1,0 +1,13 @@
+diff --git a/node_modules/@xatom/build-tool/dist/devServer.js b/node_modules/@xatom/build-tool/dist/devServer.js
+index 516161d..6428c4d 100644
+--- a/node_modules/@xatom/build-tool/dist/devServer.js
++++ b/node_modules/@xatom/build-tool/dist/devServer.js
+@@ -128,7 +128,7 @@ const loadProxyServer = (webflowSubdomain, port, distPath, scriptList, scriptToR
+             .then((_res) => {
+             const type = _res.headers["Content-Type"] ||
+                 _res.headers["content-type"];
+-            if (type === "text/html") {
++            if (type && type.includes("text/html")) {
+                 isPage = true;
+                 let dataHtml = _res.data;
+                 if (scriptToRemove.length) {
