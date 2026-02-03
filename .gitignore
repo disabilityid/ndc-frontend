@@ -8,7 +8,7 @@ coverage/
 
 # Production
 build/
-dist/
+# Note: dist/ is NOT ignored because it's served via jsDelivr CDN from GitHub
 
 # Misc
 .DS_Store
