@@ -111,7 +111,10 @@ export const discountPageRoutes = () => {
     // Check for the 'membershipValid' cookie
     const membershipValid = getCookie('membershipValid') === 'true';
 
-    if (!membershipValid) {
+    // If the page is in the Webflow category of days out, don't show the modal
+    const hasDaysOutCategory = Array.from(document.querySelectorAll('.wf-cat')).some(el => (el as HTMLElement).dataset.slug === 'days-out');
+
+    if (!membershipValid && !hasDaysOutCategory) {
       // If the cookie is not set or is false, display the modal
       const membershipModal = new WFComponent<HTMLDivElement>(".membership-modal");
       if (membershipModal) {
