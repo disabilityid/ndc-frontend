@@ -49,8 +49,34 @@ script.src = "https://cdn.jsdelivr.net/gh/disabilityid/ndc-frontend/dist/app.js?
 Visit: https://www.jsdelivr.com/tools/purge
 Enter: `gh/disabilityid/ndc-frontend`
 
+## CI/CD Pipeline
+
+### Vercel Configuration
+- **No vercel.json needed** - Files are served via jsDelivr, not Vercel
+- If using Vercel for build verification only:
+  - Set Root Directory to `.` (project root) in Vercel settings
+  - Vercel will run `npm run build` to verify builds pass
+  - Deployments can be ignored since you're not serving from Vercel
+
+### Alternative: GitHub Actions (Recommended)
+If you want CI/CD without Vercel, add `.github/workflows/build.yml`:
+```yaml
+name: Build Verification
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm run build
+```
+
 ## Important Notes
 - Always run `npm run build` before committing
 - Always commit the dist/ folder (it's needed for jsDelivr)
 - jsDelivr cache can take 7 days to expire naturally
-- Using version tags is the most reliable method
+- Using `@main` in script src ensures latest code is served
