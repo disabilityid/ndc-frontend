@@ -168,7 +168,6 @@ import {
                 modalBackground.on('click', onModalClose);
             }
   
-
             let clickedCardUrl = '';
             let isStorefrontClick = false;
 

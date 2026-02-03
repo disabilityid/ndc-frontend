@@ -1,33 +1,7 @@
 import { WFRoute, WFComponent, onReady } from "@xatom/core";
 import { membershipCheck } from "../modules/checkMembership";
-<<<<<<< HEAD
 import { fetchSingleUseCode } from "../modules/fetchSingleUseCodes";
 import { getCookie, setCookie } from "../utils/cookies";
-=======
-import { fetchSingleUseCode } from "../modules/fetchSingleUseCode";
-
-// Function to set a cookie with a specific name, value, and expiration in days
-export const setCookie = (name, value, days) => {
-  const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-  const expires = "expires=" + date.toUTCString();
-  document.cookie = name + "=" + value + ";" + expires + ";path=/";
-};
-
-export const getCookie = (name) => {
-  const nameEQ = `${name}=`;
-  const cookies = document.cookie.split(';');
-
-  for (let cookie of cookies) {
-    // Remove leading spaces and check if cookie starts with the target name
-    cookie = cookie.trim();
-    if (cookie.startsWith(nameEQ)) {
-      return cookie.substring(nameEQ.length);
-    }
-  }
-  return null;
-};
->>>>>>> a01315e18a273459ba63dedfe4fa0f25a3948ab8
 
 // Function to handle fetch requests with a timeout
 export const fetchWithTimeout = (url, options, timeout = 5000) => {
@@ -94,21 +68,10 @@ export const loginRoutes = () => {
 
 
 export const discountListRoutes = () => {
-<<<<<<< HEAD
   new WFRoute("/discounts-and-benefits(-26)?").execute(() => {
     console.log('Discounts and Benefits route');
     membershipCheck(window.location.href);
 
-=======
-  new WFRoute("/discounts-and-benefits").execute(() => {
-    membershipCheck(window.location.href);
-
-    const selects = new WFComponent<HTMLSelectElement>("select");
-    const option = selects.getChildAsComponents("option");
-    const firstOption = option[0];
-    firstOption.setAttribute("disabled", "disabled");
-
->>>>>>> a01315e18a273459ba63dedfe4fa0f25a3948ab8
     onReady(() => {
       // Remove Expired cards from the DOM
       // Get the current date

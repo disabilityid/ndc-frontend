@@ -10,13 +10,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@xatom/axios": "^1.0.4",
+    "@xatom/axios": "^1.0.0",
     "@xatom/build-tool": "1.0.5",
     "@xatom/core": "1.0.12"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "patch-package": "^8.0.1",
-    "process": "^0.11.10"
+    "patch-package": "^8.0.1"
   }
 }
