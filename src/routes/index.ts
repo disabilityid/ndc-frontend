@@ -1,5 +1,5 @@
 import { WFRoute, WFComponent, onReady } from "@xatom/core";
-import { membershipCheck } from "../modules/checkMembership";
+import { membershipCheck } from "../modules/memCheck";
 import { fetchSingleUseCode } from "../modules/fetchSingleUseCodes";
 import { getCookie, setCookie } from "../utils/cookies";
 
