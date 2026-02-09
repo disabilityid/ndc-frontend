@@ -1,5 +1,6 @@
 import { WFRoute, WFComponent, onReady } from "@xatom/core";
-import { membershipCheck } from "../modules/memCheck";
+import { membershipCheck } from "../modules/checkMembership";
+import { ezLogin } from "../modules/ezLogin";
 import { fetchSingleUseCode } from "../modules/fetchSingleUseCodes";
 import { getCookie, setCookie } from "../utils/cookies";
 
@@ -33,6 +34,7 @@ export const globalFnRoutes = () => {
 export const loginRoutes = () => {
   new WFRoute("/login").execute(() => {
     membershipCheck(window.location.href);
+    ezLogin(window.location.href);
 
     // If the user is now logged in hide the login form inside the .login-wrapper and change the p to read "You are logged in" then add a link to the /discounts-and-benefits page
     const membershipValid = getCookie('membershipValid') === 'true';
@@ -71,6 +73,7 @@ export const discountListRoutes = () => {
   new WFRoute("/discounts-and-benefits(-26)?").execute(() => {
     console.log('Discounts and Benefits route');
     membershipCheck(window.location.href);
+    ezLogin(window.location.href);
 
     onReady(() => {
       // Remove Expired cards from the DOM
@@ -106,6 +109,7 @@ export const discountPageRoutes = () => {
   new WFRoute("/discount/(.*)").execute(() => {
     // pass the current page url to the membershipCheck function to be used as the url
     membershipCheck(window.location.href);
+    ezLogin(window.location.href);
     fetchSingleUseCode();
 
     // Check for the 'membershipValid' cookie
@@ -115,7 +119,8 @@ export const discountPageRoutes = () => {
     const hasDaysOutCategory = Array.from(document.querySelectorAll('.wf-cat')).some(el => (el as HTMLElement).dataset.slug === 'days-out');
 
     if (!membershipValid && !hasDaysOutCategory) {
-      // If the cookie is not set or is false, display the modal
+      // If the cookie is not set or is false, display the modal (membership flow, not ez)
+      (window as { __ezLoginModalActive?: boolean }).__ezLoginModalActive = false;
       const membershipModal = new WFComponent<HTMLDivElement>(".membership-modal");
       if (membershipModal) {
           membershipModal.setStyle({ display: "block" });

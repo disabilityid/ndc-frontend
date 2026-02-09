@@ -51,18 +51,12 @@ import {
 
             // Try to get storefront element, but don't fail if it doesn't exist
             let storefrontButton: WFComponent<HTMLButtonElement> | null = null;
-            let ezButton: WFComponent<HTMLButtonElement> | null = null;
 
             try {
                 storefrontButton = new WFComponent<HTMLButtonElement>('[xa-elem="storefront"]');
-                ezButton = new WFComponent<HTMLButtonElement>('[xa-elem="ez"]');
                 console.log('Storefront element found, continuing with it');
-                console.log('EZ element found, continuing with it');
-                console.log('Storefront element:', storefrontButton);
-                console.log('EZ element:', ezButton);
             } catch (e) {
                 console.log('Storefront element not found, continuing without it');
-                console.log('EZ element not found, continuing without it');
             }
   
             const loginForm = new WFFormComponent<{
@@ -87,7 +81,10 @@ import {
             const handleMembershipCheck = async (event?: Event) => {
                 // Check cookie value dynamically to handle browser back navigation
                 const membershipValid = getCookie('membershipValid') === 'true';
-                
+
+                // When we show the modal from storefront/card, ezLogin should not handle form submit
+                (window as { __ezLoginModalActive?: boolean }).__ezLoginModalActive = false;
+
                 if (!membershipValid) {
                     // Always show membership modal for invalid membership
                     if (membershipModal) {
@@ -212,31 +209,25 @@ import {
                 });
             }
 
-            if (ezButton) {
-                ezButton.on('click', async (e) => {
-                    e.preventDefault();
-                    isStorefrontClick = false;
-                    console.log('isStorefrontClick:', isStorefrontClick);
-                    await handleMembershipCheck(e);
-                });
-            }
-
             loginForm.onFormSubmit((data) => {
                 const ucn = getCookie('ucn') || data.ucn;
+                const isEzFlow = (window as { __ezLoginModalActive?: boolean }).__ezLoginModalActive;
+                const formUrl = isEzFlow ? url : (isStorefrontClick ? (process.env.TILLO_STOREFRONT_URL || '') : (clickedCardUrl || url));
                 const payload: MembershipCheckPayload = {
                     ucn: ucn,
-                    url: getRedirectUrl(),
+                    url: formUrl,
                     redirectUrl: '',
                     membershipValid: false,
-                    isStorefrontClick: isStorefrontClick
+                    isStorefrontClick: isEzFlow ? false : isStorefrontClick
                 };
-                
-                // set up membership check to accept the url parameter as an arg from the discount page
-                const membershipCheck = axiosClient.post<MembershipCheckPayload>("/api/membershipCheck?mode=json&url=" + url, {
+
+                // Route to correct endpoint: ezButton flow -> enduranceZoneLogin, otherwise -> membershipCheck
+                const endpoint = isEzFlow ? "/api/enduranceZoneLogin" : "/api/membershipCheck";
+                const apiCall = axiosClient.post<MembershipCheckPayload>(endpoint + "?mode=json&url=" + url, {
                     data: payload,
                 });
 
-                membershipCheck.onLoadingChange((status) => {
+                apiCall.onLoadingChange((status) => {
                     if (status === true) {
                         membershipCheckBtn.setAttribute("value", "Checking card number...");
                     } else {
@@ -244,9 +235,9 @@ import {
                     }
                 });
 
-                membershipCheck.onData((data) => {
+                apiCall.onData((data) => {
                     if (data.membershipValid === true) {
-
+                        (window as { __ezLoginModalActive?: boolean }).__ezLoginModalActive = false;
                         setCookie('membershipValid', 'true', 1/24);
                         setCookie('ucn', data.ucn, 1/24);
                         window.location.reload();
@@ -274,7 +265,7 @@ import {
                     }
                 });
 
-                membershipCheck.onError((error) => {
+                apiCall.onError((error) => {
                     setCookie('membershipValid', 'false', 1/24);
                     if (error.status === 404) {
                         showError('Card number not found.');
@@ -287,7 +278,7 @@ import {
                     }
                 });
 
-                membershipCheck.fetch(payload);
+                apiCall.fetch(payload);
             });
         } catch (error) {
             console.error('Error initializing membership check:', error);
